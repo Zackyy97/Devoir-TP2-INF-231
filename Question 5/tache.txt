@@ -1,0 +1,21 @@
+ALGORITHME InsertHead_DoubleCircular(tail, x)
+    nouveau ← cellule(x)
+
+    SI tail = NULL ALORS
+        // Cas liste vide
+        nouveau.suivant ← nouveau
+        nouveau.precedent ← nouveau
+        tail ← nouveau
+    SINON
+        head ← tail.suivant
+
+        nouveau.suivant ← head
+        nouveau.precedent ← tail
+
+        head.precedent ← nouveau
+        tail.suivant ← nouveau
+        // tail reste inchangé
+    FIN SI
+
+    RETOURNER tail
+FIN
