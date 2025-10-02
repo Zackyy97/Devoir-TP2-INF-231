@@ -1,0 +1,36 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int valeur;
+    struct Node* suivant;
+} Node;
+
+Node* faire_nouvelle_boite(int x) {
+    Node* nouveau = (Node*)malloc(sizeof(Node));
+    if (nouveau == NULL) {
+        exit(EXIT_FAILURE);
+    }
+    nouveau->valeur = x;
+    nouveau->suivant = NULL;
+    return nouveau;
+}
+
+void mettre_en_place(Node** L_ptr, int x) {
+    Node* nouveau = faire_nouvelle_boite(x);
+
+    if (*L_ptr == NULL || x < (*L_ptr)->valeur) {
+        nouveau->suivant = *L_ptr;
+        *L_ptr = nouveau;
+        return;
+    }
+
+    Node* courant = *L_ptr;
+
+    while (courant->suivant != NULL && courant->suivant->valeur < x) {
+        courant = courant->suivant;
+    }
+
+    nouveau->suivant = courant->suivant;
+    courant->suivant = nouveau;
+}
