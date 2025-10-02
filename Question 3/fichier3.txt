@@ -1,1 +1,104 @@
-f241
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure for a Doubly Linked List Node
+typedef struct Node {
+    int valeur;
+    struct Node* suivant;
+    struct Node* precedent;
+} Node;
+
+// Function to create a new node
+Node* creer_nouveau_noeud(int x) {
+    Node* nouveau = (Node*)malloc(sizeof(Node));
+    if (nouveau == NULL) {
+        perror("Allocation mémoire échouée");
+        exit(EXIT_FAILURE);
+    }
+    nouveau->valeur = x;
+    nouveau->suivant = NULL;
+    nouveau->precedent = NULL;
+    return nouveau;
+}
+
+// Function to insert 'x' into the sorted doubly linked list
+void inserer_trie_doublement_liee(Node** L_ptr, int x) {
+    Node* nouveau = creer_nouveau_noeud(x);
+
+    // 1. Insertion en tête (si liste vide ou si x est le plus petit)
+    if (*L_ptr == NULL || x < (*L_ptr)->valeur) {
+        
+        nouveau->suivant = *L_ptr;
+        
+        if (*L_ptr != NULL) {
+            (*L_ptr)->precedent = nouveau;
+        }
+        
+        *L_ptr = nouveau;
+        return;
+    }
+
+    // 2. Insertion au milieu ou à la fin
+    Node* courant = *L_ptr;
+
+    // Trouver le noeud 'courant' après lequel insérer 'nouveau'
+    while (courant->suivant != NULL && courant->suivant->valeur < x) {
+        courant = courant->suivant;
+    }
+
+    // Insertion de 'nouveau' après 'courant'
+    
+    // 1. Lier le nouveau noeud
+    nouveau->suivant = courant->suivant;
+    nouveau->precedent = courant;
+
+    // 2. Mettre à jour les pointeurs des noeuds existants
+    if (courant->suivant != NULL) {
+        courant->suivant->precedent = nouveau;
+    }
+
+    courant->suivant = nouveau;
+}
+
+// --- Exemple d'utilisation (Fonctions utilitaires) ---
+
+void afficher_liste(Node* L) {
+    Node* temp = L;
+    while (temp != NULL) {
+        printf("%d ", temp->valeur);
+        if (temp->suivant != NULL) {
+            printf("<-> ");
+        }
+        temp = temp->suivant;
+    }
+    printf(" (NULL)\n");
+}
+
+void liberer_liste(Node* L) {
+    Node* temp;
+    while (L != NULL) {
+        temp = L;
+        L = L->suivant;
+        free(temp);
+    }
+}
+
+int main() {
+    Node* head = NULL;
+
+    printf("Liste vide:\n");
+    afficher_liste(head);
+
+    inserer_trie_doublement_liee(&head, 5); // Insertion en tête
+    inserer_trie_doublement_liee(&head, 1); // Nouvelle tête
+    inserer_trie_doublement_liee(&head, 8); // Insertion en fin
+    inserer_trie_doublement_liee(&head, 3); // Insertion au milieu
+    inserer_trie_doublement_liee(&head, 6); // Insertion au milieu
+
+    printf("\nListe triée après insertions:\n");
+    afficher_liste(head); // Attendue: 1 <-> 3 <-> 5 <-> 6 <-> 8 (NULL)
+
+    liberer_liste(head); 
+    
+    return 0;
+}
