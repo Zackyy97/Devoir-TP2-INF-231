@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int valeur;
+    struct Node* suivant;
+} Node;
+
+void supprimer_toutes_valeurs(Node** L_ptr, int x) {
+    if (*L_ptr == NULL) {
+        return;
+    }
+
+    Node* courant;
+    Node* a_supprimer;
+
+    while (*L_ptr != NULL && (*L_ptr)->valeur == x) {
+        a_supprimer = *L_ptr;
+        *L_ptr = (*L_ptr)->suivant;
+        free(a_supprimer);
+    }
+    
+    courant = *L_ptr; 
+    
+    while (courant != NULL && courant->suivant != NULL) {
+        if (courant->suivant->valeur == x) {
+            a_supprimer = courant->suivant;
+            courant->suivant = courant->suivant->suivant;
+            free(a_supprimer);
+        } else {
+            courant = courant->suivant;
+        }
+    }
+}
+
+// --- Fonctions utilitaires pour le test ---
+
+Node* creer_noeud(int valeur) {
+    Node* nouveau_noeud = (Node*)malloc(sizeof(Node));
+    if (nouveau_noeud == NULL) {
+        perror("Échec de l'allocation mémoire");
+        exit(EXIT_FAILURE);
+    }
+    nouveau_noeud->valeur = valeur;
+    nouveau_noeud->suivant = NULL;
+    return nouveau_noeud;
+}
+
+void afficher_liste(Node* L) {
+    Node* temp = L;
+    while (temp != NULL) {
+        printf("%d -> ", temp->valeur);
+        temp = temp->suivant;
+    }
+    printf("NULL\n");
+}
+
+// Fonction pour libérer toute la mémoire de la liste
+void liberer_liste(Node* L) {
+    Node* temp;
+    while (L != NULL) {
+        temp = L;
+        L = L->suivant;
+        free(temp);
+    }
+}
+
+// --- Exemple d'utilisation (main) ---
+
+int main() {
+    // Création de la liste : 5 -> 2 -> 5 -> 8 -> 5 -> 10 -> NULL
+    Node* head = creer_noeud(5);
+    head->suivant = creer_noeud(2);
+    head->suivant->suivant = creer_noeud(5);
+    head->suivant->suivant->suivant = creer_noeud(8);
+    head->suivant->suivant->suivant->suivant = creer_noeud(5);
+    head->suivant->suivant->suivant->suivant->suivant = creer_noeud(10);
+
+    int valeur_a_supprimer = 5;
+
+    printf("Liste originale:\n");
+    afficher_liste(head);
+
+    supprimer_toutes_valeurs(&head, valeur_a_supprimer);
+
+    printf("\nListe après suppression de toutes les occurrences de %d:\n", valeur_a_supprimer);
+    afficher_liste(head); 
+
+    liberer_liste(head); 
+    
+    return 0;
+}
