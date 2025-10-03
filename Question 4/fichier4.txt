@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Définition d'un nœud
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
+// Insertion en tête dans une liste circulaire
+void insererEnTete(Node** tete, int valeur) {
+    Node* nouveau = (Node*)malloc(sizeof(Node));
+    if (!nouveau) {
+        printf("Erreur d'allocation mémoire\n");
+        exit(1);
+    }
+    nouveau->data = valeur;
+
+    if (*tete == NULL) {
+        // Liste vide
+        nouveau->next = nouveau;
+        *tete = nouveau;
+    } else {
+        Node* temp = *tete;
+
+        // Aller au dernier nœud
+        while (temp->next != *tete) {
+            temp = temp->next;
+        }
+
+        nouveau->next = *tete;
+        temp->next = nouveau;
+        *tete = nouveau;  // mise à jour de la tête
+    }
+}
+
+// Insertion en queue dans une liste circulaire
+void insererEnQueue(Node** tete, int valeur) {
+    Node* nouveau = (Node*)malloc(sizeof(Node));
+    if (!nouveau) {
+        printf("Erreur d'allocation mémoire\n");
+        exit(1);
+    }
+    nouveau->data = valeur;
+
+    if (*tete == NULL) {
+        // Liste vide
+        nouveau->next = nouveau;
+        *tete = nouveau;
+    } else {
+        Node* temp = *tete;
+
+        // Aller au dernier nœud
+        while (temp->next != *tete) {
+            temp = temp->next;
+        }
+
+        temp->next = nouveau;
+        nouveau->next = *tete;  // boucle circulaire conservée
+    }
+}
+
+// Affichage de la liste circulaire
+void afficherListe(Node* tete) {
+    if (tete == NULL) {
+        printf("Liste vide\n");
+        return;
+    }
+
+    Node* temp = tete;
+    do {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    } while (temp != tete);
+
+    printf("(retour à la tête)\n");
+}
+
+// Fonction principale
+int main() {
+    Node* tete = NULL;  // Initialisation de la liste
+
+    // Insertion en tête
+    insererEnTete(&tete, 30);
+    insererEnTete(&tete, 20);
+    insererEnTete(&tete, 10);
+
+    printf("Liste après insertion en tête :\n");
+    afficherListe(tete);
+
+    // Insertion en queue
+    insererEnQueue(&tete, 40);
+    insererEnQueue(&tete, 50);
+
+    printf("\nListe après insertion en queue :\n");
+    afficherListe(tete);
+
+    return 0;
+}
